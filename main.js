@@ -372,7 +372,7 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
 
   console.log('normalizedMatrices - KALKULIRANJE:', normalizedMatrices);
   console.log('normalizedMatricesAlternatives - KALKULIRANJE:', normalizedMatricesAlternatives);
-
+  
   // Compute priority vectors
   let priorityVectors = computePriorityVectors(normalizedMatrices);
   let priorityVectorsAlternatives = computePriorityVectors(normalizedMatricesAlternatives);
@@ -388,8 +388,15 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
 
   var flattenedHierarchy = flattenHierarchy(root);
   console.log('flattenedHierarchy - KALKULIRANJE:', flattenedHierarchy);
-
+/*
   calculateFinalScores(priorityVectors, priorityVectorsAlternatives);
+  let criterionPriorityVectors = computePriorityVectors(normalizedMatrices);  // Your criterion priority vectors
+  let alternativePriorityVectors = computePriorityVectors(normalizedMatricesAlternatives);  // Your alternative priority vectors
+
+  let hierarchy = reconstructHierarchy(criterionPriorityVectors);
+  let scores = calculateAlternativeScores(hierarchy, alternativePriorityVectors);
+
+  console.log("Scores:", scores);*/
 });
 
 
@@ -715,6 +722,7 @@ function calculateFinalScores(criterionPriorityVectors, alternativesPriorityVect
   return finalScores;
 }
 */
+/* Ne dela vredu
 function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
   let finalScores = [];
 
@@ -739,7 +747,50 @@ function calculateFinalScores(criterionPriorityVectors, alternativePriorityVecto
   }
   console.log(finalScores);
   return finalScores;
+}*/
+/* Skoraj dela lol
+function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
+  // Calculate scores of alternatives for non-leaf criteria
+  let nonLeafCriterionScores = [];
+  for (let i = 0; i < criterionPriorityVectors.length; i++) {
+      nonLeafCriterionScores[i] = [];
+      for (let j = 0; j < alternativePriorityVectors.length; j++) {
+          nonLeafCriterionScores[i][j] = criterionPriorityVectors[i].reduce((sum, weight, index) => sum + weight * alternativePriorityVectors[j][index], 0);
+      }
+  }
+
+  // Calculate final scores of alternatives
+  let finalScores = [];
+  for (let i = 0; i < alternativePriorityVectors.length; i++) {
+      finalScores[i] = criterionPriorityVectors[0].reduce((sum, weight, index) => sum + weight * nonLeafCriterionScores[index][i], 0);
+  }
+  console.log(finalScores);
+  return finalScores;
 }
+*/
+/* Ne dela ->
+function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
+  // Calculate scores of alternatives for non-leaf criteria
+  let nonLeafCriterionScores = criterionPriorityVectors.map(criterionWeights => {
+      // We take each alternative's scores and multiply them by the current criterion's weights
+      return alternativePriorityVectors.map(alternativeScores => {
+          return criterionWeights.reduce((sum, weight, index) => sum + weight * alternativeScores[index], 0);
+      });
+  });
+
+  // Calculate final scores of alternatives
+  let finalScores = nonLeafCriterionScores[0].map((_, alternativeIndex) => {
+      // For each alternative, we sum up all the scores across non-leaf criteria
+      return nonLeafCriterionScores.reduce((sum, scores) => sum + scores[alternativeIndex], 0);
+  });
+  console.log(finalScores);
+  return finalScores;
+}
+*/
+
+
+
+
 
 
 
