@@ -690,7 +690,7 @@ function calculateFinalScores(root, criterionPriorityVectors, alternativePriorit
 
   return finalScores;
 }*/
-
+/*
 function calculateFinalScores(criterionPriorityVectors, alternativesPriorityVectors) {
   // Initialize an empty array for the final scores
   let finalScores = [];
@@ -710,6 +710,32 @@ function calculateFinalScores(criterionPriorityVectors, alternativesPriorityVect
       for (let j = 0; j < numAlternatives; j++) {
           finalScores[j] += criterionWeight * alternativesGrades[j];
       }
+  }
+  console.log(finalScores);
+  return finalScores;
+}
+*/
+function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
+  let finalScores = [];
+
+  for (let i = 0; i < alternativePriorityVectors.length; i++) {
+      let alternative = alternativePriorityVectors[i];
+      let subCriteriaGrades = [];
+      
+      for (let j = 0; j < criterionPriorityVectors.length; j++) {
+          let criterion = criterionPriorityVectors[j];
+          let criterionWeight = criterion[0];
+          let criterionGrades = 0;
+          
+          for (let k = 1; k < criterion.length; k++) {
+              criterionGrades += criterion[k] * alternative[k - 1];
+          }
+
+          subCriteriaGrades.push(criterionGrades * criterionWeight);
+      }
+
+      let finalGrade = subCriteriaGrades.reduce((sum, grade) => sum + grade, 0);
+      finalScores.push(finalGrade);
   }
   console.log(finalScores);
   return finalScores;
