@@ -334,6 +334,7 @@ function flattenHierarchy(node) {
 }
 
 
+
 /*document.getElementById("calculate-btn").addEventListener("click", function() {
   //Pridobitev matrik
   let matrices = retrieveTablesData();
@@ -387,7 +388,8 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
   console.log('allPaths - KALKULIRANJE:', allPaths);
 
   var flattenedHierarchy = flattenHierarchy(root);
-  console.log('flattenedHierarchy - KALKULIRANJE:', flattenedHierarchy);
+  calculateFinalScores(flattenedHierarchy, priorityVectors, priorityVectorsAlternatives);
+  //console.log('flattenedHierarchy - KALKULIRANJE:', flattenedHierarchy);
 /*
   calculateFinalScores(priorityVectors, priorityVectorsAlternatives);
   let criterionPriorityVectors = computePriorityVectors(normalizedMatrices);  // Your criterion priority vectors
@@ -787,10 +789,3 @@ function calculateFinalScores(criterionPriorityVectors, alternativePriorityVecto
   return finalScores;
 }
 */
-
-
-
-
-
-
-
