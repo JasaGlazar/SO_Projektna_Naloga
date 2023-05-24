@@ -143,72 +143,7 @@ function deleteAlternative(event) {
 }
 })
 });
-//Funkcija za generiranje tabel za ocenjevanje kriterijev
-/*
-function generateTables(data, parentDivId = 'table-container') {
-  // Find all nodes with children
-  const nodesWithChildren = data.filter(node => node.children.length > 0);
 
-  // Create a table for each node with children
-  nodesWithChildren.forEach(node => {
-    // Create a div for this node and add it to the parent div
-    const nodeDiv = document.createElement('div');
-    nodeDiv.id = node.text;  // use the node name as the div ID
-    document.getElementById(parentDivId).appendChild(nodeDiv);
-
-    // Create table element
-    const table = document.createElement('table');
-
-    // Create table header row with child node names
-    const headerRow = table.insertRow();
-    const parentCell = headerRow.insertCell();
-    parentCell.appendChild(document.createTextNode(node.text));
-    parentCell.style.fontWeight = "bold";
-    node.children.forEach(childNode => {
-      const cell = headerRow.insertCell();
-      cell.appendChild(document.createTextNode(childNode.text));
-    });
-
-    // Create table body rows for each child
-    node.children.forEach(childNode => {
-      const bodyRow = table.insertRow();
-      const childCell = bodyRow.insertCell();
-      childCell.appendChild(document.createTextNode(childNode.text));
-
-      // Create table cells for each child comparison
-      node.children.forEach(innerChildNode => {
-        const cell = bodyRow.insertCell();
-        if (childNode.id === innerChildNode.id) {
-          cell.appendChild(document.createTextNode("1"));
-        } else {
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.addEventListener('input', function() {
-            const row = this.parentNode.parentNode.rowIndex;
-            const col = this.parentNode.cellIndex;
-            const reciprocalInput = table.rows[col].cells[row].children[0];
-            if (this.value) {
-              const reciprocalValue = 1 / parseFloat(this.value);
-              reciprocalInput.value = reciprocalValue.toFixed(2);
-              //`1/${this.value}`;
-            } else {
-              reciprocalInput.value = "";
-            }
-          });
-          input.style.width = "50px";
-          input.style.textAlign = "center";
-          cell.appendChild(input);
-        }
-      });
-    });
-
-    // Add table to the node div
-    nodeDiv.appendChild(table);
-
-    // Recursively generate tables for the children of this node
-    generateTables(node.children, nodeDiv.id);
-  });
-}*/
 //Funkcija za generiranje tabel za ocenjevanje kriterijev
 function generateTables(data) {
   // Loop over all nodes in data
@@ -317,6 +252,60 @@ function getCriteriaHierarchy() {
   }
   return criteriaHierarchy;
 }
+/*
+function getCriteriaHierarchy() {
+ /* const criteriaHierarchy = [];
+  var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
+  var flattenedHierarchy = flattenHierarchy(hierarchy[0]);
+
+  for (let i = 0; i < flattenedHierarchy.length; i++) {
+    const current = flattenedHierarchy[i];
+    const children = current.children;
+
+    if (children.length === 0) {
+      const parentId = current.parent;
+      const parent = flattenedHierarchy.find(node => node.id === parentId);
+      const parentName = parent ? parent.text : null;
+
+      criteriaHierarchy.push({
+        id: current.id,
+        text: current.text,
+        parentId: parentId,
+        parentName: parentName
+      });
+    }
+  }
+
+  return criteriaHierarchy;
+  var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
+  var flattenedHierarchy = flattenHierarchy2(hierarchy[0]);
+
+  return flattenedHierarchy;
+
+}
+*/
+
+function getCriteriaHierarchyWithParents() {
+  const criteriaHierarchyWithParents = [];
+  const hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
+  const flattenedHierarchy = flattenHierarchy(hierarchy[0]);
+
+  // Iterate through the flattened hierarchy and only add the most inner sub-criteria (leaf nodes)
+  for (let i = 0; i < flattenedHierarchy.length; i++) {
+    const current = flattenedHierarchy[i];
+    const children = current.children;
+
+    if (children.length === 0) {
+      const parent = flattenedHierarchy.find(criterion => criterion.id === current.parent);
+      const parentText = parent ? parent.text : null;
+      const criterionWithParent = {...current, parentText: parentText};
+      criteriaHierarchyWithParents.push(criterionWithParent);
+    }
+  }
+  return criteriaHierarchyWithParents;
+}
+
+
 
 /*function generateAlternativeTables() {
   const alternatives = getAlternatives();
@@ -390,12 +379,12 @@ function getCriteriaHierarchy() {
 }*/
 
 //Funkcija za generiranje tabel, kjer uporabnik ocenjuje alternative
-function generateAlternativeTables() {
+/*function generateAlternativeTables() {
   const alternatives = getAlternatives();
   const criteriaHierarchy = getCriteriaHierarchy();
 
   // Get only the parent criteria (those without a parent)
-  const parentCriteria = criteriaHierarchy.filter(criterion => criterion.parent === null);
+  const parentCriteria = criteriaHierarchy.filter(criterion => criterion.parentId === null);
 
   // Iterate through each parent criterion
   parentCriteria.forEach(parentCriterion => {
@@ -404,7 +393,101 @@ function generateAlternativeTables() {
     parentDiv.id = parentCriterion.text.replace(/\s+/g, '-').toLowerCase();
 
     // Get the child criteria (sub-criteria) for this parent criterion
-    const childCriteria = criteriaHierarchy.filter(criterion => criterion.parent === parentCriterion.text);
+    const childCriteria = criteriaHierarchy.filter(criterion => criterion.parentId === parentCriterion.text);
+
+    // Iterate through each child criterion
+    childCriteria.forEach(childCriterion => {
+      // Create a div for this child criterion
+      const childDiv = document.createElement('div');
+      childDiv.id = childCriterion.text.replace(/\s+/g, '-').toLowerCase();
+
+      // Create table element
+      const table = document.createElement('table');
+
+      // Create table header row with alternative names
+      const headerRow = table.insertRow();
+      const criteriaCell = headerRow.insertCell();
+      criteriaCell.appendChild(document.createTextNode(childCriterion.text));
+      criteriaCell.style.fontWeight = "bold";
+      alternatives.forEach(alternative => {
+        const cell = headerRow.insertCell();
+        cell.appendChild(document.createTextNode(alternative));
+      });
+
+      // Create table body rows for each alternative
+      alternatives.forEach(outerAlternative => {
+        const bodyRow = table.insertRow();
+        const outerAlternativeCell = bodyRow.insertCell();
+        outerAlternativeCell.appendChild(document.createTextNode(outerAlternative));
+
+        alternatives.forEach(innerAlternative => {
+          const cell = bodyRow.insertCell();
+          if (outerAlternative === innerAlternative) {
+            cell.appendChild(document.createTextNode("1"));
+          } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.addEventListener('input', function() {
+              const row = this.parentNode.parentNode.rowIndex;
+              const col = this.parentNode.cellIndex;
+              const reciprocalInput = table.rows[col].cells[row].children[0];
+              if (this.value) {
+                const value = math.evaluate(this.value);
+                if (math.isInteger(value)) {
+                  reciprocalInput.value = value === 0 ? "" : (1 / parseFloat(value)).toFixed(2);
+                } else {
+                  const reciprocalValue = 1 / parseFloat(value);
+                  if (math.isNumeric(reciprocalValue)) {
+                    const reciprocalFraction = math.fraction(reciprocalValue);
+                    reciprocalInput.value = reciprocalValue;
+                  } else {
+                    reciprocalInput.value = "";
+                  }
+                }
+              } else {
+                reciprocalInput.value = "";
+              }
+            });
+
+            input.style.width = "50px";
+            input.style.textAlign = "center";
+            cell.appendChild(input);
+          }
+        });
+      });
+
+      // Add table to the child criterion div
+      childDiv.appendChild(table);
+
+      // Add child criterion div to the parent criterion div
+      parentDiv.appendChild(childDiv);
+    });
+
+    // Add parent criterion div to the table container
+    document.querySelector('#table-container-alternative').appendChild(parentDiv);
+  });
+}*/
+
+//Funkcija za generiranje tabel za ocenjevanje alternativ
+  
+  
+
+
+/*function generateAlternativeTables() {
+  const alternatives = getAlternatives();
+  const criteriaHierarchy = getCriteriaHierarchy();
+
+  // Get unique parent criteria names
+  const parentCriteriaNames = [...new Set(criteriaHierarchy.map(criterion => criterion.parentName))];
+
+  // Iterate through each parent criterion
+  parentCriteriaNames.forEach(parentName => {
+    // Create a div for this parent criterion
+    const parentDiv = document.createElement('div');
+    parentDiv.id = parentName;
+
+    // Get the child criteria (leaf nodes) for this parent criterion
+    const childCriteria = criteriaHierarchy.filter(criterion => criterion.parentName === parentName);
 
     // Iterate through each child criterion
     childCriteria.forEach(childCriterion => {
@@ -478,8 +561,12 @@ function generateAlternativeTables() {
     document.querySelector('#table-container-alternative').appendChild(parentDiv);
   });
 }
+*/
 
-/*function generateAlternativeTables() {
+
+
+
+function generateAlternativeTables() {
   const alternatives = getAlternatives();
   const criteriaHierarchy = getCriteriaHierarchy();
 
@@ -487,7 +574,7 @@ function generateAlternativeTables() {
   criteriaHierarchy.forEach(criterion => {
     // Create div for this criterion
     const criterionDiv = document.createElement('div');
-    criterionDiv.id = criterion.text.replace(/\s+/g, '-').toLowerCase();
+    criterionDiv.id = criterion.text.replace(/\s+/g, '-');
 
     // Create table element
     const table = document.createElement('table');
@@ -550,7 +637,7 @@ function generateAlternativeTables() {
     // Add div to the table container
     $(`#table-container-alternative`).append(criterionDiv);
   });
-}*/
+}
 
 
 
@@ -570,6 +657,21 @@ function flattenHierarchy(node) {
   return flattened;
 }
 
+function flattenHierarchy2(data, parent = null) {
+  var result = [];
+  if (data) {
+    result.push({ id: data.id, text: data.text, parentId: parent ? parent.id : null, parentName: parent ? parent.text : null });
+
+    if (data.children) {
+      data.children.forEach(child => {
+        result = result.concat(flattenHierarchy(child, data));
+      });
+    }
+  }
+  return result;
+}
+
+
 document.getElementById("calculate-btn").addEventListener("click", function() {
   // Retrieve matrices
   let matrices = retrieveTablesData();
@@ -579,14 +681,14 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
   console.log('matricesAlternatives - KALKULIRANJE:', matricesAlternatives);
 
   // Normalize matrices
-  let normalizedMatrices = normalizeMatrices(matrices);
+  let normalizedMatrices = normalizeCriterionMatrices(matrices);
   let normalizedMatricesAlternatives = normalizeMatrices(matricesAlternatives);
 
   console.log('normalizedMatrices - KALKULIRANJE:', normalizedMatrices);
   console.log('normalizedMatricesAlternatives - KALKULIRANJE:', normalizedMatricesAlternatives);
   
   // Compute priority vectors
-  let priorityVectors = computePriorityVectors(normalizedMatrices);
+  let priorityVectors = computeCriteriaPriorityVectors(normalizedMatrices);
   let priorityVectorsAlternatives = computePriorityVectors(normalizedMatricesAlternatives);
 
   console.log('priorityVectors - KALKULIRANJE:', priorityVectors);
@@ -595,11 +697,12 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
   var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
   var root = hierarchy[0];  // Assuming that the root of your criteria hierarchy is the first item in hierarchy
   
-  var allPaths = getAllPaths(root);
+  //var allPaths = getAllPaths(root);
   //console.log('allPaths - KALKULIRANJE:', allPaths);
 
-  var flattenedHierarchy = flattenHierarchy(root);
-  calculateFinalScores(priorityVectorsAlternatives, priorityVectors);
+  //var flattenedHierarchy = flattenHierarchy(root);
+  //calculateFinalScores(priorityVectorsAlternatives, priorityVectors);
+  computeFinalScores(priorityVectors, priorityVectorsAlternatives);
   //console.log('flattenedHierarchy - KALKULIRANJE:', flattenedHierarchy);
 /*
   calculateFinalScores(priorityVectors, priorityVectorsAlternatives);
@@ -614,51 +717,7 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
 
 
 /*
-function retrieveTablesData() {
-  // Get all tables
-  //const tables = document.querySelectorAll('table');
-  const tables = document.querySelectorAll('#table-container table');
 
-// Loop through each table and retrieve the data
-let allTablesData = Array.from(tables).map((table) => {
-  // Get the number of rows (or columns) in the table, excluding the header row
-  let n = table.rows.length - 1;
-
-  // Create an empty matrix to hold the data
-  let matrix = Array.from({ length: n }, () => Array(n).fill(1));
-
-  // Loop through each row and column
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= n; j++) {
-      // Get the cell at the intersection of the current row and column
-      let cell = table.rows[i].cells[j];
-
-      // Check if the cell has an input field
-      if (cell.children.length > 0 && cell.children[0].tagName === 'INPUT') {
-        // Get the input field
-        let inputField = cell.children[0];
-
-        // Get the input value
-        let value = parseFloat(inputField.value);
-
-        // Log the input field and its value
-        console.log('Input field:', inputField, 'Value:', value);
-
-        // Save the value and its reciprocal to the matrix
-        matrix[i - 1][j - 1] = value;
-        matrix[j - 1][i - 1] = 1 / value;
-      }
-    }
-  }
-
-  // Log the matrix
-  console.log('Matrix:', matrix);
-
-  return matrix;
-});
-
-return allTablesData;
-}
 
 function retrieveTablesDataAlternatives() {
   // Get all tables
@@ -708,7 +767,7 @@ return allTablesData;
 */
 
 //Funckiji, ki pridobita podatke vpisane od uporabnika:
-function retrieveTablesData() {
+/*function retrieveTablesData() {
   // Get all divs
   const divs = document.querySelectorAll('#table-container div');
 
@@ -753,7 +812,61 @@ function retrieveTablesData() {
   });
 
   return allTablesData.flat();
+}*/
+function retrieveTablesData() {
+  // Get all divs
+  const divs = document.querySelectorAll('#table-container div');
+
+  // Loop through each div and retrieve the data
+  let allTablesData = Array.from(divs).map((div) => {
+    const tables = div.querySelectorAll('table');
+    let divData = Array.from(tables).map((table) => {
+      // Get the number of rows (or columns) in the table, excluding the header row
+      let n = table.rows.length - 1;
+
+      // Create an empty matrix to hold the data
+      let matrix = Array.from({ length: n }, () => Array(n).fill(1));
+
+      // Create an empty array to hold the criterion names
+      let criterionNames = Array(n);
+
+      // Loop through each row and column
+      for (let i = 1; i <= n; i++) {
+        for (let j = 1; j <= n; j++) {
+          // Get the cell at the intersection of the current row and column
+          let cell = table.rows[i].cells[j];
+
+          // Check if the cell has an input field
+          if (cell.children.length > 0 && cell.children[0].tagName === 'INPUT') {
+            // Get the input field
+            let inputField = cell.children[0];
+
+            // Get the input value
+            let value = parseFloat(inputField.value);
+
+            // Save the value and its reciprocal to the matrix
+            matrix[i - 1][j - 1] = value;
+            matrix[j - 1][i - 1] = 1 / value;
+          }
+        }
+
+        // Retrieve the criterion name from the first cell of the current row
+        criterionNames[i - 1] = table.rows[i].cells[0].innerText;
+      }
+
+      return {
+        id: div.id,
+        matrix,
+        criteria: criterionNames,
+      };
+    });
+
+    return divData;
+  });
+
+  return allTablesData.flat();
 }
+
 
 function retrieveTablesDataAlternatives() {
   // Get all divs
@@ -849,6 +962,33 @@ function normalizeMatrices(matricesData) {
   });
 }
 
+
+function normalizeCriterionMatrices(matricesData) {
+  return matricesData.map(({ id, matrix, criteria }, idx) => {
+    console.log(`Matrix ${idx + 1} (ID: ${id}) before normalization:`);
+    console.log(matrix);
+
+    // Calculate the sum of each column
+    let columnSums = matrix[0].map((col, j) => matrix.reduce((sum, row) => sum + row[j], 0));
+
+    // console.log(`Column sums for matrix ${idx + 1}:`);
+    // console.log(columnSums);
+
+    // Divide each element in a column by the sum of the column
+    let normalizedMatrix = matrix.map(row => row.map((value, j) => value / columnSums[j]));
+
+    console.log(`Matrix ${idx + 1} (ID: ${id}) after normalization:`);
+    console.log(normalizedMatrix);
+
+    return {
+      id,
+      matrix: normalizedMatrix,
+      criteria,
+    };
+  });
+}
+
+
 /*
 function computePriorityVectors(normalizedMatrices) {
   return normalizedMatrices.map((matrix) => {
@@ -876,6 +1016,51 @@ function computePriorityVectors(normalizedMatricesData) {
       priorityVector
     };
   });
+}
+
+
+function computeCriteriaPriorityVectors(normalizedMatricesData) {
+  return normalizedMatricesData.map(({ id, matrix, criteria }) => {
+    // Calculate the average of each row
+    let priorityVector = matrix.map((row) => row.reduce((sum, value) => sum + value, 0) / row.length);
+
+    console.log(`Priority vector for ${id}:`);
+    console.log(priorityVector);
+
+    return {
+      id,
+      priorityVector,
+      criteria,
+    };
+  });
+}
+
+function computeFinalScores(hierarchy, alternativesGrades) {
+  const scores = {};
+
+  function calculateScores(criterion, weight = 1) {
+    const { id, priorityVector, criteria } = criterion;
+
+    if (criteria) { // criterion is not a leaf node
+      criteria.forEach((childCriterion, idx) => {
+        calculateScores(childCriterion, weight * priorityVector[idx]);
+      });
+    } else { // criterion is a leaf node
+      const grades = alternativesGrades.find(c => c.id === id).priorityVector;
+      grades.forEach((grade, idx) => {
+        scores[idx] = (scores[idx] || 0) + weight * grade;
+      });
+    }
+  }
+
+  hierarchy.forEach(criterion => {
+    if (criterion.id === 'Hierarhija kriterijev') { // root node
+      calculateScores(criterion);
+    }
+  });
+
+  console.log(scores);
+  return scores;
 }
 
 
