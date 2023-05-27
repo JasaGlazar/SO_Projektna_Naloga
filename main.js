@@ -157,6 +157,7 @@ function generateTables(data) {
 
       // Create table element
       const table = document.createElement('table');
+      table.classList.add("table", "table-bordered");
 
       // Create table header row with child node names
       const headerRow = table.insertRow();
@@ -207,14 +208,6 @@ function generateTables(data) {
   });
 }
 
-
-
-
-$( function() {
-  $( "#tabs" ).tabs();
-});
-
-
 function getAlternatives() {
   const alternativesList = document.getElementById('alternatives-list');
   const alternatives = [];
@@ -252,38 +245,6 @@ function getCriteriaHierarchy() {
   }
   return criteriaHierarchy;
 }
-/*
-function getCriteriaHierarchy() {
- /* const criteriaHierarchy = [];
-  var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
-  var flattenedHierarchy = flattenHierarchy(hierarchy[0]);
-
-  for (let i = 0; i < flattenedHierarchy.length; i++) {
-    const current = flattenedHierarchy[i];
-    const children = current.children;
-
-    if (children.length === 0) {
-      const parentId = current.parent;
-      const parent = flattenedHierarchy.find(node => node.id === parentId);
-      const parentName = parent ? parent.text : null;
-
-      criteriaHierarchy.push({
-        id: current.id,
-        text: current.text,
-        parentId: parentId,
-        parentName: parentName
-      });
-    }
-  }
-
-  return criteriaHierarchy;
-  var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
-  var flattenedHierarchy = flattenHierarchy2(hierarchy[0]);
-
-  return flattenedHierarchy;
-
-}
-*/
 
 function getCriteriaHierarchyWithParents() {
   const criteriaHierarchyWithParents = [];
@@ -305,267 +266,6 @@ function getCriteriaHierarchyWithParents() {
   return criteriaHierarchyWithParents;
 }
 
-
-
-/*function generateAlternativeTables() {
-  const alternatives = getAlternatives();
-  const criteriaHierarchy = getCriteriaHierarchy();
-
-  // Iterate through each sub-criteria and create a table for alternative grading
-  criteriaHierarchy.forEach(criterion => {
-    // Create table element
-    const table = document.createElement('table');
-
-    // Create table header row with alternative names
-    const headerRow = table.insertRow();
-    const criteriaCell = headerRow.insertCell();
-    criteriaCell.appendChild(document.createTextNode(criterion.text));
-    criteriaCell.style.fontWeight = "bold";
-    alternatives.forEach(alternative => {
-      const cell = headerRow.insertCell();
-      cell.appendChild(document.createTextNode(alternative));
-    });
-
-    // Create table body rows for each alternative
-    alternatives.forEach(outerAlternative => {
-      const bodyRow = table.insertRow();
-      const outerAlternativeCell = bodyRow.insertCell();
-      outerAlternativeCell.appendChild(document.createTextNode(outerAlternative));
-
-      alternatives.forEach(innerAlternative => {
-        const cell = bodyRow.insertCell();
-        if (outerAlternative === innerAlternative) {
-          cell.appendChild(document.createTextNode("1"));
-        } else {
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.addEventListener('input', function() {
-            const row = this.parentNode.parentNode.rowIndex;
-            const col = this.parentNode.cellIndex;
-            const reciprocalInput = table.rows[col].cells[row].children[0];
-            if (this.value) {
-              const value = math.evaluate(this.value);
-              if (math.isInteger(value)) {
-                reciprocalInput.value = value === 0 ? "" : (1 / parseFloat(value)).toFixed(2);
-                //math.format(math.fraction(1 / value), { fraction: 'ratio' });
-              } else {
-                const reciprocalValue = 1 / parseFloat(value);
-                //math.divide(1, value);
-                if (math.isNumeric(reciprocalValue)) {
-                  const reciprocalFraction = math.fraction(reciprocalValue);
-                  reciprocalInput.value = reciprocalValue;
-                  //reciprocalFraction.n.toString();
-                } else {
-                  reciprocalInput.value = "";
-                }
-              }
-            } else {
-              reciprocalInput.value = "";
-            }
-            
-            
-          });
-          
-          input.style.width = "50px";
-          input.style.textAlign = "center";
-          cell.appendChild(input);
-        }
-      });
-    });
-
-    // Add table to the node element
-    $(`#table-container-alternative`).append(table);
-  });
-}*/
-
-//Funkcija za generiranje tabel, kjer uporabnik ocenjuje alternative
-/*function generateAlternativeTables() {
-  const alternatives = getAlternatives();
-  const criteriaHierarchy = getCriteriaHierarchy();
-
-  // Get only the parent criteria (those without a parent)
-  const parentCriteria = criteriaHierarchy.filter(criterion => criterion.parentId === null);
-
-  // Iterate through each parent criterion
-  parentCriteria.forEach(parentCriterion => {
-    // Create a div for this parent criterion
-    const parentDiv = document.createElement('div');
-    parentDiv.id = parentCriterion.text.replace(/\s+/g, '-').toLowerCase();
-
-    // Get the child criteria (sub-criteria) for this parent criterion
-    const childCriteria = criteriaHierarchy.filter(criterion => criterion.parentId === parentCriterion.text);
-
-    // Iterate through each child criterion
-    childCriteria.forEach(childCriterion => {
-      // Create a div for this child criterion
-      const childDiv = document.createElement('div');
-      childDiv.id = childCriterion.text.replace(/\s+/g, '-').toLowerCase();
-
-      // Create table element
-      const table = document.createElement('table');
-
-      // Create table header row with alternative names
-      const headerRow = table.insertRow();
-      const criteriaCell = headerRow.insertCell();
-      criteriaCell.appendChild(document.createTextNode(childCriterion.text));
-      criteriaCell.style.fontWeight = "bold";
-      alternatives.forEach(alternative => {
-        const cell = headerRow.insertCell();
-        cell.appendChild(document.createTextNode(alternative));
-      });
-
-      // Create table body rows for each alternative
-      alternatives.forEach(outerAlternative => {
-        const bodyRow = table.insertRow();
-        const outerAlternativeCell = bodyRow.insertCell();
-        outerAlternativeCell.appendChild(document.createTextNode(outerAlternative));
-
-        alternatives.forEach(innerAlternative => {
-          const cell = bodyRow.insertCell();
-          if (outerAlternative === innerAlternative) {
-            cell.appendChild(document.createTextNode("1"));
-          } else {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.addEventListener('input', function() {
-              const row = this.parentNode.parentNode.rowIndex;
-              const col = this.parentNode.cellIndex;
-              const reciprocalInput = table.rows[col].cells[row].children[0];
-              if (this.value) {
-                const value = math.evaluate(this.value);
-                if (math.isInteger(value)) {
-                  reciprocalInput.value = value === 0 ? "" : (1 / parseFloat(value)).toFixed(2);
-                } else {
-                  const reciprocalValue = 1 / parseFloat(value);
-                  if (math.isNumeric(reciprocalValue)) {
-                    const reciprocalFraction = math.fraction(reciprocalValue);
-                    reciprocalInput.value = reciprocalValue;
-                  } else {
-                    reciprocalInput.value = "";
-                  }
-                }
-              } else {
-                reciprocalInput.value = "";
-              }
-            });
-
-            input.style.width = "50px";
-            input.style.textAlign = "center";
-            cell.appendChild(input);
-          }
-        });
-      });
-
-      // Add table to the child criterion div
-      childDiv.appendChild(table);
-
-      // Add child criterion div to the parent criterion div
-      parentDiv.appendChild(childDiv);
-    });
-
-    // Add parent criterion div to the table container
-    document.querySelector('#table-container-alternative').appendChild(parentDiv);
-  });
-}*/
-
-//Funkcija za generiranje tabel za ocenjevanje alternativ
-  
-  
-
-
-/*function generateAlternativeTables() {
-  const alternatives = getAlternatives();
-  const criteriaHierarchy = getCriteriaHierarchy();
-
-  // Get unique parent criteria names
-  const parentCriteriaNames = [...new Set(criteriaHierarchy.map(criterion => criterion.parentName))];
-
-  // Iterate through each parent criterion
-  parentCriteriaNames.forEach(parentName => {
-    // Create a div for this parent criterion
-    const parentDiv = document.createElement('div');
-    parentDiv.id = parentName;
-
-    // Get the child criteria (leaf nodes) for this parent criterion
-    const childCriteria = criteriaHierarchy.filter(criterion => criterion.parentName === parentName);
-
-    // Iterate through each child criterion
-    childCriteria.forEach(childCriterion => {
-      // Create a div for this child criterion
-      const childDiv = document.createElement('div');
-      childDiv.id = childCriterion.text.replace(/\s+/g, '-').toLowerCase();
-
-      // Create table element
-      const table = document.createElement('table');
-
-      // Create table header row with alternative names
-      const headerRow = table.insertRow();
-      const criteriaCell = headerRow.insertCell();
-      criteriaCell.appendChild(document.createTextNode(childCriterion.text));
-      criteriaCell.style.fontWeight = "bold";
-      alternatives.forEach(alternative => {
-        const cell = headerRow.insertCell();
-        cell.appendChild(document.createTextNode(alternative));
-      });
-
-      // Create table body rows for each alternative
-      alternatives.forEach(outerAlternative => {
-        const bodyRow = table.insertRow();
-        const outerAlternativeCell = bodyRow.insertCell();
-        outerAlternativeCell.appendChild(document.createTextNode(outerAlternative));
-
-        alternatives.forEach(innerAlternative => {
-          const cell = bodyRow.insertCell();
-          if (outerAlternative === innerAlternative) {
-            cell.appendChild(document.createTextNode("1"));
-          } else {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.addEventListener('input', function() {
-              const row = this.parentNode.parentNode.rowIndex;
-              const col = this.parentNode.cellIndex;
-              const reciprocalInput = table.rows[col].cells[row].children[0];
-              if (this.value) {
-                const value = math.evaluate(this.value);
-                if (math.isInteger(value)) {
-                  reciprocalInput.value = value === 0 ? "" : (1 / parseFloat(value)).toFixed(2);
-                } else {
-                  const reciprocalValue = 1 / parseFloat(value);
-                  if (math.isNumeric(reciprocalValue)) {
-                    const reciprocalFraction = math.fraction(reciprocalValue);
-                    reciprocalInput.value = reciprocalValue;
-                  } else {
-                    reciprocalInput.value = "";
-                  }
-                }
-              } else {
-                reciprocalInput.value = "";
-              }
-            });
-
-            input.style.width = "50px";
-            input.style.textAlign = "center";
-            cell.appendChild(input);
-          }
-        });
-      });
-
-      // Add table to the child criterion div
-      childDiv.appendChild(table);
-
-      // Add child criterion div to the parent criterion div
-      parentDiv.appendChild(childDiv);
-    });
-
-    // Add parent criterion div to the table container
-    document.querySelector('#table-container-alternative').appendChild(parentDiv);
-  });
-}
-*/
-
-
-
-
 function generateAlternativeTables() {
   const alternatives = getAlternatives();
   const criteriaHierarchy = getCriteriaHierarchy();
@@ -578,6 +278,7 @@ function generateAlternativeTables() {
 
     // Create table element
     const table = document.createElement('table');
+    table.classList.add("table", "table-bordered");
 
     // Create table header row with alternative names
     const headerRow = table.insertRow();
@@ -671,6 +372,94 @@ function flattenHierarchy2(data, parent = null) {
   return result;
 }
 
+function createHierarchySequentially(flatHierarchy) {
+  const findNodeDetails = (id) => {
+      const node = flatHierarchy.find(item => item.id === id);
+      if (!node) return null;
+      const { priorityVector, criteria } = node;
+
+      // Recursive call to add sub-criteria details
+      const detailedCriteria = criteria.map(criterion => findNodeDetails(criterion) || criterion);
+
+      return {
+          id,
+          priorityVector,
+          criteria: detailedCriteria
+      };
+  };
+
+  // The first node in flatHierarchy is considered as the root node
+  const root = findNodeDetails(flatHierarchy[0].id);
+
+  console.log(root);
+  return root;
+}
+
+function createLeafToParentMapping(hierarchy) {
+  let mapping = {};
+
+  hierarchy.forEach(node => {
+    if (node.criteria) {
+      node.criteria.forEach(criteria => {
+        mapping[criteria] = node.id;
+      });
+    }
+  });
+
+  return mapping;
+}
+
+function groupAlternativeGradesByParent(alternativeGrades, hierarchy) {
+  const leafToParentMapping = createLeafToParentMapping(hierarchy);
+
+  let groupedGrades = {};
+
+  alternativeGrades.forEach(({id, priorityVector}) => {
+    const parent = leafToParentMapping[id];
+    if (!groupedGrades[parent]) {
+      groupedGrades[parent] = [];
+    }
+    groupedGrades[parent].push({id, priorityVector});
+  });
+
+  return groupedGrades;
+}
+
+function calculateScore(hierarchy, grades) {
+  // Recursive function to calculate the score
+  function helper(hierarchy, parentWeight = 1) {
+      let scores = [];
+
+      for (let i = 0; i < hierarchy.criteria.length; i++) {
+          const id = hierarchy.criteria[i].id || hierarchy.criteria[i];
+          const weight = hierarchy.priorityVector[i];
+
+          if (typeof hierarchy.criteria[i] === 'object') {
+              // If this criteria has subcriteria, recurse
+              scores = addScores(scores, helper(hierarchy.criteria[i], weight * parentWeight));
+          } else {
+              // Else, get the scores for this criteria from grades
+              const gradeScores = grades[hierarchy.id].find(e => e.id === id).priorityVector.map(g => g * weight * parentWeight);
+              scores = addScores(scores, gradeScores);
+          }
+      }
+      return scores;
+  }
+
+  // Helper function to add two arrays of scores
+  function addScores(arr1, arr2) {
+      if (arr1.length === 0) return arr2;
+      if (arr2.length === 0) return arr1;
+      return arr1.map((val, i) => val + arr2[i]);
+  }
+
+  // Call the helper function for the root of the hierarchy
+  return helper(hierarchy);
+}
+
+
+
+
 
 document.getElementById("calculate-btn").addEventListener("click", function() {
   // Retrieve matrices
@@ -694,125 +483,32 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
   console.log('priorityVectors - KALKULIRANJE:', priorityVectors);
   console.log('priorityVectorsAlternatives - KALKULIRANJE:', priorityVectorsAlternatives);
 
-  var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
-  var root = hierarchy[0];  // Assuming that the root of your criteria hierarchy is the first item in hierarchy
   
-  //var allPaths = getAllPaths(root);
-  //console.log('allPaths - KALKULIRANJE:', allPaths);
 
-  //var flattenedHierarchy = flattenHierarchy(root);
-  //calculateFinalScores(priorityVectorsAlternatives, priorityVectors);
-  computeFinalScores(priorityVectors, priorityVectorsAlternatives);
-  //console.log('flattenedHierarchy - KALKULIRANJE:', flattenedHierarchy);
-/*
-  calculateFinalScores(priorityVectors, priorityVectorsAlternatives);
-  let criterionPriorityVectors = computePriorityVectors(normalizedMatrices);  // Your criterion priority vectors
-  let alternativePriorityVectors = computePriorityVectors(normalizedMatricesAlternatives);  // Your alternative priority vectors
+  const nestedHierarchy = createHierarchySequentially(priorityVectors);
+  console.log("Nested hierarchy: ",nestedHierarchy);
 
-  let hierarchy = reconstructHierarchy(criterionPriorityVectors);
-  let scores = calculateAlternativeScores(hierarchy, alternativePriorityVectors);
+  const groupedAlternativeGrades = groupAlternativeGradesByParent(priorityVectorsAlternatives, priorityVectors);
 
-  console.log("Scores:", scores);*/
-});
+  console.log("Grupirane ocene alternativ: ",groupedAlternativeGrades);
 
 
-/*
+  console.log("Rezultati: ",calculateScore(nestedHierarchy, groupedAlternativeGrades));
 
+  let alternatives = getAlternatives();
+  let scores = calculateScore(nestedHierarchy, groupedAlternativeGrades);
 
-function retrieveTablesDataAlternatives() {
-  // Get all tables
-  //const tables = document.querySelectorAll('table');
-  const tables = document.querySelectorAll('#table-container-alternative table');
-
-// Loop through each table and retrieve the data
-let allTablesData = Array.from(tables).map((table) => {
-  // Get the number of rows (or columns) in the table, excluding the header row
-  let n = table.rows.length - 1;
-
-  // Create an empty matrix to hold the data
-  let matrix = Array.from({ length: n }, () => Array(n).fill(1));
-
-  // Loop through each row and column
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= n; j++) {
-      // Get the cell at the intersection of the current row and column
-      let cell = table.rows[i].cells[j];
-
-      // Check if the cell has an input field
-      if (cell.children.length > 0 && cell.children[0].tagName === 'INPUT') {
-        // Get the input field
-        let inputField = cell.children[0];
-
-        // Get the input value
-        let value = parseFloat(inputField.value);
-
-        // Log the input field and its value
-        //console.log('Input field:', inputField, 'Value:', value);
-
-        // Save the value and its reciprocal to the matrix
-        matrix[i - 1][j - 1] = value;
-        matrix[j - 1][i - 1] = 1 / value;
-      }
+    // Create results HTML string
+    let resultsHtml = "";
+    for (let i = 0; i < alternatives.length; i++) {
+      resultsHtml += `<p>Alternative: ${alternatives[i]}, Score: ${scores[i]}</p>`;
     }
-  }
-
-  // Log the matrix
-  console.log('Matrix:', matrix);
-
-  return matrix;
+  
+    // Add results to div
+    document.getElementById("results").innerHTML = resultsHtml;
+  
 });
 
-return allTablesData;
-}
-*/
-
-//Funckiji, ki pridobita podatke vpisane od uporabnika:
-/*function retrieveTablesData() {
-  // Get all divs
-  const divs = document.querySelectorAll('#table-container div');
-
-  // Loop through each div and retrieve the data
-  let allTablesData = Array.from(divs).map((div) => {
-    const tables = div.querySelectorAll('table');
-    let divData = Array.from(tables).map((table) => {
-      // Get the number of rows (or columns) in the table, excluding the header row
-      let n = table.rows.length - 1;
-
-      // Create an empty matrix to hold the data
-      let matrix = Array.from({ length: n }, () => Array(n).fill(1));
-
-      // Loop through each row and column
-      for (let i = 1; i <= n; i++) {
-        for (let j = 1; j <= n; j++) {
-          // Get the cell at the intersection of the current row and column
-          let cell = table.rows[i].cells[j];
-
-          // Check if the cell has an input field
-          if (cell.children.length > 0 && cell.children[0].tagName === 'INPUT') {
-            // Get the input field
-            let inputField = cell.children[0];
-
-            // Get the input value
-            let value = parseFloat(inputField.value);
-
-            // Save the value and its reciprocal to the matrix
-            matrix[i - 1][j - 1] = value;
-            matrix[j - 1][i - 1] = 1 / value;
-          }
-        }
-      }
-
-      return {
-        id: div.id,
-        matrix
-      };
-    });
-
-    return divData;
-  });
-
-  return allTablesData.flat();
-}*/
 function retrieveTablesData() {
   // Get all divs
   const divs = document.querySelectorAll('#table-container div');
@@ -915,28 +611,6 @@ function retrieveTablesDataAlternatives() {
   return allTablesData.flat();
 }
 
-
-
-/*function normalizeMatrices(matrices) {
-  return matrices.map((matrix, idx) => {
-    console.log(`Matrix ${idx + 1} before normalization:`);
-    console.log(matrix);
-
-    // Calculate the sum of each column
-    let columnSums = matrix[0].map((col, j) => matrix.reduce((sum, row) => sum + row[j], 0));
-
-   // console.log(`Column sums for matrix ${idx + 1}:`);
-   // console.log(columnSums);
-
-    // Divide each element in a column by the sum of the column
-    let normalizedMatrix = matrix.map(row => row.map((value, j) => value / columnSums[j]));
-
-    console.log(`Matrix ${idx + 1} after normalization:`);
-    console.log(normalizedMatrix);
-
-    return normalizedMatrix;
-  });
-}*/
 //Funkcija za normaliziranje matrik:
 function normalizeMatrices(matricesData) {
   return matricesData.map(({ id, matrix }, idx) => {
@@ -988,20 +662,6 @@ function normalizeCriterionMatrices(matricesData) {
   });
 }
 
-
-/*
-function computePriorityVectors(normalizedMatrices) {
-  return normalizedMatrices.map((matrix) => {
-    // Calculate the average of each row
-    let priorityVector = matrix.map((row) => row.reduce((sum, value) => sum + value, 0) / row.length);
-
-    console.log('Priority vector:');
-    console.log(priorityVector);
-
-    return priorityVector;
-  });
-}*/
-
 //Funkcija za računanje uteži/ koristnosti:
 function computePriorityVectors(normalizedMatricesData) {
   return normalizedMatricesData.map(({ id, matrix }) => {
@@ -1034,320 +694,3 @@ function computeCriteriaPriorityVectors(normalizedMatricesData) {
     };
   });
 }
-
-function computeFinalScores(hierarchy, alternativesGrades) {
-  const scores = {};
-
-  function calculateScores(criterion, weight = 1) {
-    const { id, priorityVector, criteria } = criterion;
-
-    if (criteria) { // criterion is not a leaf node
-      criteria.forEach((childCriterion, idx) => {
-        calculateScores(childCriterion, weight * priorityVector[idx]);
-      });
-    } else { // criterion is a leaf node
-      const grades = alternativesGrades.find(c => c.id === id).priorityVector;
-      grades.forEach((grade, idx) => {
-        scores[idx] = (scores[idx] || 0) + weight * grade;
-      });
-    }
-  }
-
-  hierarchy.forEach(criterion => {
-    if (criterion.id === 'Hierarhija kriterijev') { // root node
-      calculateScores(criterion);
-    }
-  });
-
-  console.log(scores);
-  return scores;
-}
-
-
-
-function getAllPaths(node) {
-  if (node.children.length === 0) {
-    return [[node.id]];
-  } else {
-    let paths = [];
-    for (let child of node.children) {
-      let childPaths = getAllPaths(child);
-      for (let childPath of childPaths) {
-        paths.push([node.id].concat(childPath));
-      }
-    }
-    return paths;
-  }
-}
-
-function calculateFinalScores(alternativeMatricesData, criteriaPriorityVectors) {
-  // Initialize the final scores array
-  let finalScores = [];
-
-  // Get the number of alternatives from the first matrix's priority vector
-  let numberOfAlternatives = alternativeMatricesData[0].priorityVector.length;
-
-  // Initialize the final scores for each alternative to 0
-  for (let i = 0; i < numberOfAlternatives; i++) {
-    finalScores.push(0);
-  }
-
-  // For each alternative matrix
-  alternativeMatricesData.forEach(({ id: altId, priorityVector: altPriorityVector }) => {
-    // Find the corresponding criterion priority vector
-    let criterionPriorityVector = criteriaPriorityVectors.find(({ id: critId }) => critId === altId).priorityVector;
-
-    // Multiply each alternative score by the corresponding criterion weight and add it to the final score
-    for (let i = 0; i < numberOfAlternatives; i++) {
-      finalScores[i] += altPriorityVector[i] * criterionPriorityVector[0]; //assuming criterionPriorityVector is a single value or the first value is the main priority
-    }
-  });
-
-  console.log(finalScores);
-  return finalScores;
-}
-
-
-/*function calculateFinalScores(paths, priorityVectors, alternativePriorityVectors) {
-  let finalScores = {};
-  for (let path of paths) {
-    // Get the product of priorities along the path
-    let product = path.reduce((product, nodeId, index) => {
-      if (index === path.length - 1) {
-        // If it's the last node in the path, get the alternative priority vector
-        let alternativePriorityVector = alternativePriorityVectors[nodeId];
-        for (let alternative in alternativePriorityVector) {
-          if (!(alternative in finalScores)) {
-            finalScores[alternative] = 0;
-          }
-          // Add the product of priorities to the final score of the alternative
-          finalScores[alternative] += product * alternativePriorityVector[alternative];
-        }
-      } else {
-        // If it's not the last node, get the priority vector
-        return product * priorityVectors[nodeId];
-      }
-    }, 1);
-  }
-  console.log(finalScores);
-  return finalScores;
-}*/
-/*function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors, paths) {
-  console.log("Criterion priority vectors: ", criterionPriorityVectors);
-  console.log("Alternative priority vectors: ", alternativePriorityVectors);
-  console.log("Paths: ", paths);
-
-  // Initialize an empty object to store the final scores
-  let finalScores = {};
-
-  // For each path
-  paths.forEach((path) => {
-    console.log("Processing path: ", path);
-
-    // Get the priority vector for alternatives for the last node in the path
-    let lastNode = path[path.length - 1];
-    let alternatives = alternativePriorityVectors[lastNode];
-
-    console.log("Alternatives for last node in path: ", alternatives);
-
-    // Calculate the product of priority vectors along the path
-    let pathProduct = path.reduce((product, nodeId) => {
-      return product * (criterionPriorityVectors[nodeId] || 1);
-    }, 1);
-
-    console.log("Path product: ", pathProduct);
-
-    // Add the products to the final scores for each alternative
-    for (let alternative in alternatives) {
-      if (!(alternative in finalScores)) {
-        finalScores[alternative] = 0;
-      }
-
-      finalScores[alternative] += pathProduct * alternatives[alternative];
-    }
-  });
-
-  console.log("Final scores: ", finalScores);
-  return finalScores;
-}*/
-/*function calculateFinalScores(allPaths, criterionPriorityVectors, alternativePriorityVectors) {
-  console.log('Criterion priority vectors: ', criterionPriorityVectors);
-  console.log('Alternative priority vectors: ', alternativePriorityVectors);
-  console.log('Paths: ', allPaths);
-
-  const finalScores = {};
-
-  allPaths.forEach((path, pathIndex) => {
-    console.log('Processing path: ', path);
-
-    let pathProduct = 1;
-    path.forEach((nodeId, nodeIndex) => {
-      const criterionPriority = criterionPriorityVectors[0][nodeIndex];
-      pathProduct *= criterionPriority;
-
-      console.log('Criterion priority for node ' + nodeId + ': ', criterionPriority);
-    });
-
-    const lastNodeInPath = path[path.length - 1];
-    const alternatives = alternativePriorityVectors[pathIndex];
-
-    console.log('Alternatives for last node in path: ', alternatives);
-
-    if (alternatives) {
-      alternatives.forEach((alternativePriority, alternativeIndex) => {
-        if (!finalScores[alternativeIndex]) {
-          finalScores[alternativeIndex] = 0;
-        }
-
-        finalScores[alternativeIndex] += pathProduct * alternativePriority;
-
-        console.log('Intermediate score for alternative ' + alternativeIndex + ': ', finalScores[alternativeIndex]);
-      });
-    }
-
-    console.log('Path product: ', pathProduct);
-  });
-
-  console.log('Final scores: ', finalScores);
-}*/
-
-/*function calculateNodeScore(node, alternativePriorityVectors, criterionPriorityVectors, depth = 0) {
-  let nodeScore = 0;
-
-  if(node.children.length > 0) {
-      // If the node has children, its score is the sum of its children's scores
-      for(const child of node.children) {
-          const childScore = calculateNodeScore(child, alternativePriorityVectors, criterionPriorityVectors, depth + 1);
-          nodeScore += childScore;
-      }
-  } else {
-      // If the node is a leaf (i.e., has no children), its score is the product of its own priority and the priority of the alternative
-      for(let i = 0; i < alternativePriorityVectors[depth].length; i++) {
-          if(!finalScores[i]) finalScores[i] = 0;
-          const alternativePriority = alternativePriorityVectors[depth][i];
-          const criterionPriority = criterionPriorityVectors[0][depth];
-          nodeScore = criterionPriority * alternativePriority;
-          finalScores[i] += nodeScore;
-      }
-  }
-
-  return nodeScore;
-}
-
-let finalScores = {};
-function calculateFinalScores(root, criterionPriorityVectors, alternativePriorityVectors) {
-  finalScores = {};  // Reset finalScores for each calculation
-  calculateNodeScore(root, alternativePriorityVectors, criterionPriorityVectors);
-  console.log('Final scores: ', finalScores);
-}
-*/
-
-//Tota sploh ni vreji ->
-/*function calculateFinalScores(allPaths, criterionPriorityVectors, alternativePriorityVectors) {
-  const finalScores = {};
-
-  allPaths.forEach((path) => {
-    const pathProduct = path.reduce((product, nodeId, index) => {
-      return product * criterionPriorityVectors[index][nodeId];
-    }, 1);
-
-    Object.keys(alternativePriorityVectors).forEach((alternativeId) => {
-      const alternativeScore = alternativePriorityVectors[alternativeId][path[path.length - 1]];
-      finalScores[alternativeId] = (finalScores[alternativeId] || 0) + pathProduct * alternativeScore;
-    });
-  });
-
-  console.log('Final scores: ', finalScores);
-
-  return finalScores;
-}*/
-/*
-function calculateFinalScores(criterionPriorityVectors, alternativesPriorityVectors) {
-  // Initialize an empty array for the final scores
-  let finalScores = [];
-
-  // Initialize an array for the number of alternatives
-  let numAlternatives = alternativesPriorityVectors[0].length;
-  for (let i = 0; i < numAlternatives; i++) {
-      finalScores[i] = 0;
-  }
-
-  // Iterate through each criterion
-  for (let i = 0; i < criterionPriorityVectors.length; i++) {
-      let criterionWeight = criterionPriorityVectors[i][0]; // Get the weight of the current criterion
-      let alternativesGrades = alternativesPriorityVectors[i]; // Get the grades of the alternatives for the current criterion
-
-      // Add the weighted grade of each alternative to its final score
-      for (let j = 0; j < numAlternatives; j++) {
-          finalScores[j] += criterionWeight * alternativesGrades[j];
-      }
-  }
-  console.log(finalScores);
-  return finalScores;
-}
-*/
-/* Ne dela vredu
-function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
-  let finalScores = [];
-
-  for (let i = 0; i < alternativePriorityVectors.length; i++) {
-      let alternative = alternativePriorityVectors[i];
-      let subCriteriaGrades = [];
-      
-      for (let j = 0; j < criterionPriorityVectors.length; j++) {
-          let criterion = criterionPriorityVectors[j];
-          let criterionWeight = criterion[0];
-          let criterionGrades = 0;
-          
-          for (let k = 1; k < criterion.length; k++) {
-              criterionGrades += criterion[k] * alternative[k - 1];
-          }
-
-          subCriteriaGrades.push(criterionGrades * criterionWeight);
-      }
-
-      let finalGrade = subCriteriaGrades.reduce((sum, grade) => sum + grade, 0);
-      finalScores.push(finalGrade);
-  }
-  console.log(finalScores);
-  return finalScores;
-}*/
-/* Skoraj dela lol
-function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
-  // Calculate scores of alternatives for non-leaf criteria
-  let nonLeafCriterionScores = [];
-  for (let i = 0; i < criterionPriorityVectors.length; i++) {
-      nonLeafCriterionScores[i] = [];
-      for (let j = 0; j < alternativePriorityVectors.length; j++) {
-          nonLeafCriterionScores[i][j] = criterionPriorityVectors[i].reduce((sum, weight, index) => sum + weight * alternativePriorityVectors[j][index], 0);
-      }
-  }
-
-  // Calculate final scores of alternatives
-  let finalScores = [];
-  for (let i = 0; i < alternativePriorityVectors.length; i++) {
-      finalScores[i] = criterionPriorityVectors[0].reduce((sum, weight, index) => sum + weight * nonLeafCriterionScores[index][i], 0);
-  }
-  console.log(finalScores);
-  return finalScores;
-}
-*/
-/* Ne dela ->
-function calculateFinalScores(criterionPriorityVectors, alternativePriorityVectors) {
-  // Calculate scores of alternatives for non-leaf criteria
-  let nonLeafCriterionScores = criterionPriorityVectors.map(criterionWeights => {
-      // We take each alternative's scores and multiply them by the current criterion's weights
-      return alternativePriorityVectors.map(alternativeScores => {
-          return criterionWeights.reduce((sum, weight, index) => sum + weight * alternativeScores[index], 0);
-      });
-  });
-
-  // Calculate final scores of alternatives
-  let finalScores = nonLeafCriterionScores[0].map((_, alternativeIndex) => {
-      // For each alternative, we sum up all the scores across non-leaf criteria
-      return nonLeafCriterionScores.reduce((sum, scores) => sum + scores[alternativeIndex], 0);
-  });
-  console.log(finalScores);
-  return finalScores;
-}
-*/

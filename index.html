@@ -8,61 +8,62 @@
     <!-- Include jsTree CSS and JavaScript files -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style.css">
     <!-- jQuery and jsTree JavaScript files -->
 
   </head>
   <body>
-    <div id="tabs">
-      <ul>
-        <li><a href="#tabs-1">Izbira parametrov</a></li>
-        <li><a href="#tabs-2">Izbira alternativ</a></li>
-        <li><a href="#tabs-3">?</a></li>
-      </ul>
-    <div id="tabs-1">
-    <h1>Hierarhija kriterijev</h1>
-    <div id="jstree"></div>
-    <button id="add-btn">Dodaj</button>
-    <button id="edit-btn">Uredi</button>
-    <button id="delete-btn">Izbriši</button>
-    <button id="submit-btn">Pošlji</button>
-    <div id="table-container"></div>
-    <div id="table-container-alternative"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <h1 class="text-center mb-4">Adding Alternatives Example</h1>
+    <div id="main-container" class="flex-container">
+      <div class="hierarchy-section">
+        <h1>Kriteriji</h1>
+        <div id="jstree"></div>
+        <div id="button-container">
+          <button class="custom-btn" id="add-btn">Dodaj</button>
+          <button class="custom-btn" id="edit-btn">Uredi</button>
+          <button class="custom-btn" id="delete-btn">Izbriši</button>
+          <button class="custom-btn" id="submit-btn">Ocenjevanje</button>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="list-group" id="alternatives-list">
-            <a href="#" class="list-group-item list-group-item-action active">Alternative</a>
-            
+      
+      <div class="alternatives-section">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <h1 class="text-center mb-4">Dodajanje alternativ</h1>
+            </div>
           </div>
-          <div class="form-group mt-4">
-            <input id="new-alternative-input" type="text" class="form-control" placeholder="Dodaj alternativo">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="list-group" id="alternatives-list">
+                <a href="#" class="list-group-item list-group-item-action active">Alternative</a>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group mt-4">
+                <input id="new-alternative-input" type="text" class="form-control" placeholder="Dodaj alternativo">
+              </div>
+              <button id="add-alternative-btn" class="btn btn-primary">Dodaj</button>
+            </div>
+            <div class="col-md-8"></div>
           </div>
-          <button id="add-alternative-btn" class="btn btn-primary">Add Alternative</button>
-        <div class="col-md-8">
-          
         </div>
-        
       </div>
-      <button id="calculate-btn">Calculate Scores</button>
+    </div>
+    <div style="margin-top: 40px;">
+      <div id="table-container-wrapper">
+        <div id="table-container"></div>
+        <div id="table-container-alternative"></div>
+      </div>
+      <button class="custom-btn" id="calculate-btn">Izračunaj</button>
       <div id="results"></div>
-
     </div>
-     </div>
-     
-    </div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
     <!-- Bootstrap JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js" integrity="sha512-VW8/i4IZkHxdD8OlqNdF7fGn3ba0+lYqag+Uy4cG6BtJ/LIr8t23s/vls70pQ41UasHH0tL57GQfKDApqc9izA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!--<script src="./node_modules/ahp/src/ahp.js"></script>-->
     <script type="module" src="main.js"></script>
-    <!--<script src="./dist/bundle.js"></script>-->
   </body>
+
 </html>
