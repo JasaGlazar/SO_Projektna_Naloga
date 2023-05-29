@@ -742,3 +742,44 @@ function computeCriteriaPriorityVectors(normalizedMatricesData) {
     };
   });
 }
+
+function exportTablesToExcel() {
+  
+  const tables = Array.from(document.querySelectorAll('table'));
+
+  const wb = XLSX.utils.book_new();
+
+  tables.forEach((table, i) => {
+      // Create a new temporary table
+      const tempTable = document.createElement('table');
+
+      // For each row in the table
+      Array.from(table.querySelectorAll('tr')).forEach(row => {
+          const tempRow = document.createElement('tr');
+
+          // For each cell in the row
+          Array.from(row.querySelectorAll('td')).forEach(cell => {
+              const tempCell = document.createElement('td');
+
+              // If the cell has an input, use the input value
+              const input = cell.querySelector('input');
+              if (input) {
+                  tempCell.textContent = input.value;
+              } else {
+                  tempCell.textContent = cell.textContent;
+              }
+
+              tempRow.appendChild(tempCell);
+          });
+
+          tempTable.appendChild(tempRow);
+      });
+
+      const ws = XLSX.utils.table_to_sheet(tempTable);
+      XLSX.utils.book_append_sheet(wb, ws, table.id || "Sheet" + (i + 1));
+  });
+
+  XLSX.writeFile(wb, 'tables.xlsx');
+}
+
+document.getElementById('export-btn').addEventListener('click', exportTablesToExcel);
