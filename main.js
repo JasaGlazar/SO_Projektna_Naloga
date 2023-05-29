@@ -67,11 +67,15 @@ $(function () {
     $('#submit-btn').click(function() {
       // Usage example:
       $(`#table-container`).empty();
+      $(`#table-container-alternative`).empty();
+
+        // Add headers
+  $('#table-container').append('<h3>Ocenjevanje kriterijev</h3>');
+  $('#table-container-alternative').append('<h3>Ocenjevanje alternativ</h3>');
+
   var hierarchy = $('#jstree').jstree(true).get_json('#', { 'flat': false });
   var flattenedHierarchy = flattenHierarchy(hierarchy[0]);
-  //createTables(flattenedHierarchy);
   generateTables(flattenedHierarchy);
-  //var alternatives = getAlternatives();
   generateAlternativeTables();
     })
 
@@ -499,13 +503,57 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
   let scores = calculateScore(nestedHierarchy, groupedAlternativeGrades);
 
     // Create results HTML string
-    let resultsHtml = "";
-    for (let i = 0; i < alternatives.length; i++) {
-      resultsHtml += `<p>Alternative: ${alternatives[i]}, Score: ${scores[i]}</p>`;
+  let resultsHtml = "<table class='table table-bordered table-dark'><thead><tr><th>Alternativa</th><th>Rezultat</th></tr></thead><tbody>";
+  let maxScoreIndex = 0;
+  let maxScore = -Infinity;
+
+  for (let i = 0; i < alternatives.length; i++) {
+    if (scores[i] > maxScore) {
+      maxScore = scores[i];
+      maxScoreIndex = i;
+    }
+  }
+
+  for (let i = 0; i < alternatives.length; i++) {
+    let formattedScore = scores[i].toFixed(2);
+    if (i == maxScoreIndex) {
+      resultsHtml += `<tr class="bg-success"><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
+    } else {
+      resultsHtml += `<tr><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
+    }
+  }
+
+  resultsHtml += "</tbody></table>";
+
+  // Add results to div
+  document.getElementById("rezultati-tabela").innerHTML = resultsHtml;
+
+  google.charts.load('current', {packages: ['corechart', 'bar']});
+  google.charts.setOnLoadCallback(drawChart);
+  
+  function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Alternativa');
+    data.addColumn('number', 'Rezultat');
+  
+    for(let i = 0; i < alternatives.length; i++) {
+      data.addRow([alternatives[i], scores[i]]);
     }
   
-    // Add results to div
-    document.getElementById("results").innerHTML = resultsHtml;
+    var options = {
+      title: 'Rezultati alternativ',
+      hAxis: {
+        title: 'Rezultati',
+      },
+      vAxis: {
+        title: 'Alternative'
+      },
+      bars: 'horizontal'
+    };
+  
+    var chart = new google.visualization.BarChart(document.getElementById('rezultati-graf'));
+    chart.draw(data, options);
+  }
   
 });
 
