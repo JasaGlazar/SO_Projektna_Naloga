@@ -64,5 +64,10 @@
     margin: 10px;
   }
   
-  
+  #table-container-wrapper-alternative {
+    border: 2px solid #000000;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px;
+  } 
   

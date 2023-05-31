@@ -502,28 +502,37 @@ document.getElementById("calculate-btn").addEventListener("click", function() {
   let alternatives = getAlternatives();
   let scores = calculateScore(nestedHierarchy, groupedAlternativeGrades);
 
-    // Create results HTML string
-  let resultsHtml = "<table class='table table-bordered table-dark'><thead><tr><th>Alternativa</th><th>Rezultat</th></tr></thead><tbody>";
-  let maxScoreIndex = 0;
-  let maxScore = -Infinity;
+  // Create results HTML string
+let resultsHtml = "<table class='table table-bordered table-dark'><thead><tr><th>Alternativa</th><th>Rezultat</th></tr></thead><tbody>";
+let maxScoreIndex = 0;
+let maxScore = -Infinity;
 
-  for (let i = 0; i < alternatives.length; i++) {
-    if (scores[i] > maxScore) {
-      maxScore = scores[i];
-      maxScoreIndex = i;
-    }
+let minScoreIndex = 0;
+let minScore = Infinity;
+
+for (let i = 0; i < alternatives.length; i++) {
+  if (scores[i] > maxScore) {
+    maxScore = scores[i];
+    maxScoreIndex = i;
   }
-
-  for (let i = 0; i < alternatives.length; i++) {
-    let formattedScore = scores[i].toFixed(2);
-    if (i == maxScoreIndex) {
-      resultsHtml += `<tr class="bg-success"><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
-    } else {
-      resultsHtml += `<tr><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
-    }
+  if (scores[i] < minScore) {
+    minScore = scores[i];
+    minScoreIndex = i;
   }
+}
 
-  resultsHtml += "</tbody></table>";
+for (let i = 0; i < alternatives.length; i++) {
+  let formattedScore = scores[i].toFixed(2);
+  if (i == maxScoreIndex) {
+    resultsHtml += `<tr class="bg-success"><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
+  } else if (i == minScoreIndex) {
+    resultsHtml += `<tr class="bg-danger"><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
+  } else {
+    resultsHtml += `<tr><td>${alternatives[i]}</td><td>${formattedScore}</td></tr>`;
+  }
+}
+
+resultsHtml += "</tbody></table>";
 
   // Add results to div
   document.getElementById("rezultati-tabela").innerHTML = resultsHtml;
